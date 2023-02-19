@@ -11,5 +11,4 @@ applicationrouter.get('/:id',protect,getbyid);
 applicationrouter.put('/update/:id',protect,updateapplication);
 applicationrouter.delete('/delete/:id',protect,Delete);
 
-
 export default applicationrouter

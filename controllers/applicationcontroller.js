@@ -1,6 +1,8 @@
 import Application from '../models/application.js'
 import bcrypt from 'bcryptjs'
 import { body, validationResult } from 'express-validator'
+import {mailApplication} from '../utils/mailtext'
+import { sendEmail } from '../utils/emailsender.js'
 import { generateJWTtoken } from '../utils/generatetoken.js'
 
 function diff_minutes(dt2, dt1) 
@@ -13,32 +15,27 @@ function diff_minutes(dt2, dt1)
  }
 
 export const getapplications = async (req, res) => {
-    console.log(req.user.address.town)
-    console.log(req.user.role)
-    console.log("object")
     let applications;
     try {
         if(req.user.role == 'vc')
         {
            
-            applications = await Application.find({$and: [{ pincode : req.user.address.pincode},  {date: {$lte: st}}, {status :{vc: {status :{$eq : 'Pending'}}}}] })
+            applications = await Application.find({$and: [{ pincode : req.user.address.pincode}, { status :{$eq : 'Pending'}}] })
 
-            console.log(applications)
+            // console.log(applications)
         }
         else if(req.user.role == 'mm')
         {
             let date = new Date()
             let st = date.setDate(date.getDate()-7)
-            console.log(new Date(st))
-            applications = await Application.find({$and: [{ town : req.user.address.town},  {date: {$lte: st}}, {status : {vc: {action :{$eq : 'None'}}}}] })
+            // console.log(new Date(st))
+            applications = await Application.find({$or: [{$and: [{ town : req.user.address.town},  {date: {$lte: st}}, {action :{$eq : 'None'}}] }, {forwarded: {$eq: 'mm'}}]})
         }
         else if(req.user.role == 'cl')
         {
             let date = new Date()
             let st = date.setDate(date.getDate()-14)
-            console.log(new Date(st))
-            console.log("finidint in cl")
-            applications = await Application.find({$and: [{ district : req.user.address.district},{date: {$lte: st}} ]})
+            applications = await Application.find({$or: [{$and: [{ district : req.user.address.district},{date: {$lte: st}}, {status :{$eq : "Pending"}} ]},{forwarded: {$eq: 'cl'}}] })
         }
         else
         {
@@ -58,8 +55,6 @@ export const submitapplication=([
 body('title', 'enter vaild email').isLength({min: 5}),
 body('description', 'enter vaild password').isLength({ min: 10}),
 ],async (req,res)=>{
-    console.log(req.user)
-    console.log(req.user.address.pincode)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -75,7 +70,7 @@ body('description', 'enter vaild password').isLength({ min: 10}),
            district : req.user.address.district
         })
         application.save();
-
+        sendEmail(req.user.email, "Your Social Issue Submission",mailApplication(req.user.name.firstname, application.title))
         res.status(200).json({application})
         
     } catch (error) {
@@ -101,16 +96,13 @@ export const getbyid=async(req,res)=>{
 
 export const updateapplication=async(req,res)=>{
     let aid = req.params.id
-    console.log(req.user.role)
     let role = req.user.role
-    console.log(aid)
-    console.log(req.body.status)
     let application
     if(role == 'vc' || role == 'cl' || role == 'mm')
     {
-        const status = req.body.status
+        const {status, action, forwarded} = req.body
         try{
-        application = await Application.findByIdAndUpdate(aid,{status})
+        application = await Application.findByIdAndUpdate(aid,{status, action, forwarded})
         application = await Application.findById(aid)
         }
         catch (error) {

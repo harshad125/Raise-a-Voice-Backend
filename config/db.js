@@ -3,11 +3,9 @@ import * as dotenv from 'dotenv';
 dotenv.config({path:'./.env'});
 
 const contomongo=()=>{
-      // console.log(process.env.BASE_URL);
        mongoose.set("strictQuery", false);
        mongoose.connect(process.env.BASE_URL,()=>{
-           console.log("successfully connected");
-          // console.log(`MongoDB Connected : ${conn.connection.host}`);
+           console.log("Database connected successfully");
        }).catch((err)=>console.log(err))
 }
 

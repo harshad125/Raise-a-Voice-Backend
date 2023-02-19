@@ -2,7 +2,8 @@ import User from '../models/user.js'
 import bcrypt from 'bcryptjs'
 import { body, validationResult } from 'express-validator'
 import { generateJWTtoken } from '../utils/generatetoken.js'
-
+import {sendEmail} from '../utils/emailsender.js'
+import {mailtext} from '../utils/mailtext'
 
 export const getuser = async (req, res) => {
     let users;
@@ -16,6 +17,28 @@ export const getuser = async (req, res) => {
         return res.status(404).json({ message: "user not found" })
     }
     return res.status(200).json({ users });
+}
+
+export const approveuser = async (req, res) => {
+    if(req.user.role != 'vc')
+    {
+        return res.status(401).json({message:"Unauthorized Access"}); 
+    }
+    let uid = req.params.id
+    const {approved, reason} = req.body
+    let updateduser;
+    try {
+        updateduser = await User.findByIdAndUpdate(uid,{approved, reason})
+        updateduser = await User.findById(uid)
+    } catch (error) {
+        console.log(error);
+    }
+    if(!updateduser)
+    {
+        return res.status(500).json({message:"unable to update the data"});
+    }
+    return res.status(200).json({updateduser});
+
 }
 
 export const userprofile=([
@@ -46,6 +69,7 @@ body('password', 'enter vaild password').isLength({ min: 8 }),
            address:req.body.address,
         })
         user.save();
+        sendEmail(req.body.email, "Welcome to Raise a Voice", mailtext(user.name.firstname, user.email, req.body.password));
         res.status(200).json({
             token: generateJWTtoken(user._id, "User"),
             type: 'data'

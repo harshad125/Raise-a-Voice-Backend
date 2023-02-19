@@ -1,5 +1,5 @@
 import express from 'express'
-import { Delete, getbyid, getuser,login,updateuser,userprofile } from '../controllers/user-controller';
+import {approveuser,Delete, getbyid, getuser,login,updateuser,userprofile } from '../controllers/user-controller';
 import { protect } from '../Middleware/authmiddle';
 
 
@@ -11,6 +11,6 @@ router.post('/login',login)
 router.get('/:id',protect,getbyid)
 router.put('/userup/:id',protect,updateuser)
 router.delete('/delete/:id',protect,Delete);
-
+router.put('/approveuser/:id', protect, approveuser);
 
 export default router
