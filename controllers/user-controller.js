@@ -7,15 +7,25 @@ import { mailtext } from '../utils/mailtext'
 
 export const getuser = async (req, res) => {
     let users;
-    try {
-        users = await User.find();
-    } catch (error) {
-        console.log(error)
+    console.log(req.user.address.town)
+    if(req.user.role == "vc")
+    {
 
     }
-    if (!users) {
-        return res.status(404).json({ message: "user not found" })
+    else if(req.user.role == "mm")
+    {
+        try {
+            users = await User.find({address: {town: req.user.address.town}});
+        } catch (error) {
+            console.log(error)
+    
+        }
+        if (!users) {
+            return res.status(404).json({ message: "user not found" })
+        }
     }
+    
+   
     return res.status(200).json({ users });
 }
 
@@ -72,8 +82,7 @@ export const register = (
             });
 
         } catch (error) {
-            console.log(error);
-            res.status(401).json({ message: "something went wrong" })
+            res.status(401).json({ message: error })
         }
     }
 )
@@ -83,15 +92,15 @@ export const userprofile = ([
     body('contact', 'enter vaild contact').isLength({ min: 10, max: 10 })
 ], async (req, res) => {
 
-    let existinguser;
+    let existinguser = req.user;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        existinguser = await User.findOne({ email: req.body.email })
-        console.log("not ema")
         if (existinguser) {
+            console.log(existinguser._id)
+            
             const user = await User.findByIdAndUpdate(existinguser._id, {
                 name: req.body.name,
                 aadhaarcard_no: req.body.aadhaarcard_no,
@@ -107,8 +116,8 @@ export const userprofile = ([
             res.status(400).json({ message: "Bad Request" })
         }
     } catch (error) {
-        console.log(error)
-        res.status(401).json({ message: "something went wrong" })
+        
+        res.status(400).json({ message: error })
     }
 })
 
@@ -137,6 +146,7 @@ export const login = ([
         });
     } catch (error) {
         console.log(error.message)
+        return res.status(400).json({message : error})
     }
 })
 
@@ -146,7 +156,7 @@ export const getbyid = async (req, res) => {
     try {
         user = await User.findById(userid);
     } catch (error) {
-        console.log(error);
+        return res.status(400).json({message : error})
     }
     if (!user) {
         return res.status(404).json({ message: "user not found" });
@@ -161,7 +171,7 @@ export const updateuser = async (req, res) => {
     try {
         dev = await User.findByIdAndUpdate(did, { name, email, password, contact, aadhaarcart_no, address })
     } catch (error) {
-        console.log(error);
+        return res.status(400).json({message : error})
     }
     if (!dev) {
         return res.status(500).json({ message: "unable to update the data" });
@@ -175,7 +185,7 @@ export const Delete = async (req, res) => {
     try {
         user = await User.findByIdAndRemove(userid);
     } catch (error) {
-        console.log(error);
+        return res.status(400).json({message : error})
     }
     if (!user) {
         return res.status(404).json({ message: "user not deleted perfectly" });
