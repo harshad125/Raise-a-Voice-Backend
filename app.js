@@ -21,5 +21,5 @@ app.use('/api/application',applicationrouter)
 
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`)
+  console.log(`Raise a Voice Portal is listening on port ${PORT}`)
 })

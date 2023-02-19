@@ -5,9 +5,9 @@ const Schema=mongoose.Schema;
 const userschema=new Schema({
 
     name:{
-        firstname:{type:String, required: [true, "can't be blank"] },
-        middlename:{type:String, required: [true, "can't be blank"]},
-        lastname:{type:String, required: [true, "can't be blank"]}
+        firstname:{type:String, default:'firstname',required: [true, "can't be blank"] },
+        middlename:{type:String, default:'middlename', required: [true, "can't be blank"]},
+        lastname:{type:String, default:'lastname', required: [true, "can't be blank"]}
     },
     email: {
         type: String,
@@ -32,11 +32,11 @@ const userschema=new Schema({
         unique: true
     },
     address:{
-        home:{type:String,required:[true,"cant't be blank"]},
-        village:{type:String,required:[true,"cant't be blank"]},
-        town:{type:String,required:[true,"cant't be blank"]},
-        district:{type:String,required:[true,"cant't be blank"]},
-        pincode:{type:Number,required:[true,"cant't be blank"]}
+        home:{type:String, default: '-'},
+        village:{type:String, default: '-'},
+        town:{type:String, default: '-'},
+        district:{type:String, default: '-'},
+        pincode:{type:Number, default: 0}
     },
     approved:{
         type:String,
