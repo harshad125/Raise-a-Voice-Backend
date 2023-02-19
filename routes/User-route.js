@@ -6,7 +6,7 @@ import { protect } from '../Middleware/authmiddle';
 const router=express.Router()
 
 router.get('/',getuser);
-router.post('/profile',userprofile)
+router.put('/profile',userprofile)
 router.post('/register',register)
 router.post('/login',login)
 router.get('/:id',protect,getbyid)
