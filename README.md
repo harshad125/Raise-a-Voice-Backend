@@ -8,7 +8,7 @@ First go the project directory and make sure that your current directory is Rais
 
 ### 1. `npm install`
 
-### 2. Then run `node index.js`, and if you see output like `Voice a Raise is listening on port: 5000!`, initialization is sucessfull, else there is some error.
+### 2. Then run `npm start`, and if you see output like `Voice a Raise portal is listening on port: 5000!`, initialization is sucessfull, else there is some error.
 
 
 
