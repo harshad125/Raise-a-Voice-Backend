@@ -4,7 +4,7 @@ Backend Code for Raise a Voice Portal
 
 ## Steps to follow to initialize the server
 
-First go the project directory and make sure that your current directory is server, and then run the following commands
+First go the project directory and make sure that your current directory is Raise-a-Voice, and then run the following commands
 
 ### 1. `npm install`
 
