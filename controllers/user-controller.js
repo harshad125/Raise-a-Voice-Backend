@@ -7,22 +7,48 @@ import { mailtext } from '../utils/mailtext'
 
 export const getuser = async (req, res) => {
     let users;
+    let authority = req.user;
+    console.log(authority.address)
     console.log(req.user.address.town)
     if(req.user.role == "vc")
     {
-
-    }
-    else if(req.user.role == "mm")
-    {
         try {
-            users = await User.find({address: {town: req.user.address.town}});
+            users = await User.find({"address.pincode": `${authority.address.pincode}`});
         } catch (error) {
-            console.log(error)
+            return res.status(200).json({error});
     
         }
         if (!users) {
             return res.status(404).json({ message: "user not found" })
         }
+    }
+    else if(req.user.role == "mm")
+    {
+        try {
+            users = await User.find({"address.town": `${authority.address.town}`});
+        } catch (error) {
+            return res.status(200).json({error});
+    
+        }
+        if (!users) {
+            return res.status(404).json({ message: "user not found" })
+        }
+    }
+    else if(req.user.role == "cl")
+    {
+        try {
+            users = await User.find({"address.district": `${authority.address.district}`});
+        } catch (error) {
+            return res.status(200).json({error});
+    
+        }
+        if (!users) {
+            return res.status(404).json({ message: "user not found" })
+        }
+    }
+    else
+    {
+        return res.status(401).json({message: "Unauthorized Access "})
     }
     
    

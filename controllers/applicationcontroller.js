@@ -14,17 +14,12 @@ function diff_minutes(dt2, dt1)
   
  }
 
+
 export const getapplications = async (req, res) => {
     let applications;
     try {
-        if(req.user.role == 'vc')
-        {
-           
-            applications = await Application.find({$and: [{ pincode : req.user.address.pincode}, { status :{$eq : 'Pending'}}] })
 
-            // console.log(applications)
-        }
-        else if(req.user.role == 'mm')
+        if(req.user.role == 'mm')
         {
             let date = new Date()
             let st = date.setDate(date.getDate()-7)
@@ -39,10 +34,11 @@ export const getapplications = async (req, res) => {
         }
         else
         {
-        applications = await Application.find({user : req.user._id});
+            applications = await Application.find({$and: [{ pincode : req.user.address.pincode}, { status :{$eq : 'Pending'}}] })
+
         }
     } catch (error) {
-        console.log(error)
+        return res.status(501).json({error });
 
     }
     if (!applications) {
@@ -74,7 +70,7 @@ body('description', 'enter vaild password').isLength({ min: 10}),
         res.status(200).json({application})
         
     } catch (error) {
-        console.log(error);
+        return res.status(501).json({error });
     }
 })
 
@@ -106,7 +102,7 @@ export const updateapplication=async(req,res)=>{
         application = await Application.findById(aid)
         }
         catch (error) {
-            console.log(error);
+        return res.status(501).json({error });
         }
         if(!application)
          {
@@ -129,7 +125,7 @@ export const Delete=async(req,res)=>{
     try {
        application = await Application.findByIdAndRemove(aid);
     } catch (error) {
-      console.log(error);
+        return res.status(501).json({error });
     }
     if(!application)
     {
