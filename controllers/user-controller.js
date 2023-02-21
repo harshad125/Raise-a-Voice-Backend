@@ -61,6 +61,8 @@ export const approveuser = async (req, res) => {
     }
     let uid = req.params.id
     const { approved, reason } = req.body
+    console.log(req.body)
+    console.log(approved, reason)
     let updateduser;
     try {
         updateduser = await User.findByIdAndUpdate(uid, { approved, reason })

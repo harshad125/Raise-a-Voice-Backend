@@ -39,7 +39,7 @@ const userschema=new Schema({
     },
     approved:{
         type:String,
-        default:false
+        default: "Pending"
     },
     reason :{
         type: String,

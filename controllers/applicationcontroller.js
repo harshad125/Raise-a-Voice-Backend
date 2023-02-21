@@ -76,10 +76,10 @@ body('description', 'enter vaild password').isLength({ min: 10}),
 
 
 export const getbyid=async(req,res)=>{
-    let applicationid=req.params.id;
+    let applicationid = req.params.id;
     let application;
     try {
-        application = await Application.findById(applicationid);
+        application = await Application.find({user: applicationid});
     } catch (error) {
         console.log(error);
     }
